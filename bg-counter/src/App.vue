@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import Counter from "./components/Counter.vue"
+import {useWakeLock} from "@vueuse/core";
+useWakeLock().request('screen')
 </script>
 
 <template>
