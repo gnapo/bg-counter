@@ -1,6 +1,10 @@
 {
-    "name": "",
-    "short_name": "",
+    "name": "Counter",
+    "short_name": "Counter",
+    "description": "A Counter to keep track of a number",
+
+    "scope": "/bg-counter/",
+    "start_url": "/bg-counter/",
     "icons": [
         {
             "src": "./android-chrome-192x192.png",
