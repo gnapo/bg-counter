@@ -22,7 +22,7 @@ self.addEventListener('fetch', function (e) {
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) =>
-            fetch('/assets.json')
+            fetch('./assets.json')
                 .then((response) => response.json())
                 .then((assets) =>
                     cache.addAll(assets.map((asset) => GHPATH + asset))
