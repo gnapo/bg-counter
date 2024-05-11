@@ -1,6 +1,6 @@
 const GHPATH = '/bg-counter/';
 const APP_PREFIX = 'bgc_';
-const VERSION = 'version_000';
+const VERSION = 'version_001';
 
 
 const CACHE_NAME = APP_PREFIX + VERSION
