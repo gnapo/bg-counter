@@ -1,13 +1,14 @@
 const GHPATH = '/bg-counter/';
 const APP_PREFIX = 'bgc_';
-const VERSION = 'version_001';
+const VERSION = 'version_002';
 
 
 const CACHE_NAME = APP_PREFIX + VERSION
-self.addEventListener('fetch', function (e) {
+self.addEventListener('fetch', async function (e) {
+    const cache = await caches.open(CACHE_NAME)
     console.log('Fetch request : ' + e.request.url);
     e.respondWith(
-        caches.match(e.request).then(function (request) {
+        cache.match(e.request).then(function (request) {
             if (request) {
                 console.log('Responding with cache : ' + e.request.url);
                 return request

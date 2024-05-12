@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import Button from "primevue/button";
 import InputNumber from "primevue/inputnumber";
+import {useStorage} from "@vueuse/core";
 import {ref} from "vue";
 
-const counter = ref(0);
+const counter = useStorage("counter", ref(0));
 const increment = (n: number) => {
   counter.value += n;
 }
