@@ -1,14 +1,13 @@
 const GHPATH = '/bg-counter/';
 const APP_PREFIX = 'bgc_';
-const VERSION = 'version_003';
+const VERSION = 'version_004';
 
 
 const CACHE_NAME = APP_PREFIX + VERSION
 self.addEventListener('fetch', async function (e) {
-    const cache = await caches.open(CACHE_NAME)
     console.log('Fetch request : ' + e.request.url);
     e.respondWith(
-        cache.match(e.request).then(function (request) {
+        caches.match(e.request).then(function (request) {
             if (request) {
                 console.log('Responding with cache : ' + e.request.url);
                 return request
@@ -22,12 +21,13 @@ self.addEventListener('fetch', async function (e) {
 
 self.addEventListener('install', (event) => {
     event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) =>
+        caches.open(CACHE_NAME).then((cache) => {
             fetch('./assets.json')
                 .then((response) => response.json())
                 .then((assets) =>
                     cache.addAll(assets.map((asset) => GHPATH + asset))
                 )
+            }
         )
     )
 })
