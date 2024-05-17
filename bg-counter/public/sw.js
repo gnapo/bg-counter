@@ -1,6 +1,7 @@
 const GHPATH = '/bg-counter/';
 const APP_PREFIX = 'bgc_';
-const VERSION = 'version_004';
+const VERSION = 'version_005';
+const FILES = ['', 'favicon.ico', 'android-chrome-192x192.png']
 
 
 const CACHE_NAME = APP_PREFIX + VERSION
@@ -22,11 +23,12 @@ self.addEventListener('fetch', async function (e) {
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            fetch('./assets.json')
-                .then((response) => response.json())
-                .then((assets) =>
-                    cache.addAll(assets.map((asset) => GHPATH + asset))
-                )
+                fetch('./assets.json')
+                    .then((response) => response.json())
+                    .then((assets) =>
+                        cache.addAll(assets.map((asset) => GHPATH + asset))
+                    )
+                cache.addAll(FILES.map((file) => GHPATH + file))
             }
         )
     )
@@ -41,7 +43,7 @@ self.addEventListener('activate', function (e) {
             cacheWhitelist.push(CACHE_NAME);
             return Promise.all(keyList.map(function (key, i) {
                 if (cacheWhitelist.indexOf(key) === -1) {
-                    console.log('Deleting cache : ' + keyList[i] );
+                    console.log('Deleting cache : ' + keyList[i]);
                     return caches.delete(keyList[i])
                 }
             }))
