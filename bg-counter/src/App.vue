@@ -1,38 +1,73 @@
 <script setup lang="ts">
+import Sidebar from "primevue/sidebar"
+import Button from "primevue/button"
 import Counter from "./components/Counter.vue"
-import {useWakeLock} from "@vueuse/core";
-useWakeLock().request('screen')
+import InputSwitch from "primevue/inputswitch"
+import InputText from "primevue/inputtext"
+import ColorPicker from 'primevue/colorpicker'
+import {useStorage, useWakeLock} from "@vueuse/core"
+import {reactive, type Ref, ref, watch} from "vue"
+interface counter {
+  name: string
+  color: string
+  value: number
+}
+
+const counters: Ref<counter[]> = useStorage("counters", ref([{name: '', color: '', value: 0}]));
+const wakeLock = reactive(useWakeLock())
+wakeLock.request('screen')
+
+const showSidebar = ref(false)
+const keepAwake = ref(true)
+watch(keepAwake, (value) => {
+  if (value) {
+    wakeLock.request('screen')
+  } else {
+    wakeLock.release()
+  }
+})
 </script>
 
 <template>
-  <Counter />
+  <Button @click="showSidebar = !showSidebar" icon="pi pi-cog" class="overlay-button"/>
+  <div class="counters" >
+    <Counter v-for="(counter, index) in counters"  :name="counter.name" :color="counter.color" v-model="counter.value" :key="index"/>
+  </div>
+  <Sidebar v-model:visible="showSidebar" :header="'Options'">
+    <p class="line">
+    Keep screen on <InputSwitch v-model="keepAwake" />
+    </p>
+    <p class="line" v-for="(counter, index) in counters" :key="index">
+      <InputText v-model="counter.name" />  <ColorPicker v-model="counter.color" default-color="ffffff"/>
+    </p>
+
+    <p class="line" >
+      <Button @click="counters.push({name: '', color: '', value: 0})" icon="pi pi-plus" />
+      <Button @click="counters.pop()" icon="pi pi-minus" v-if="counters.length>1"/>
+    </p>
+  </Sidebar>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
+.line {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem;
+}
+.counters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+.overlay-button {
+  position: fixed;
+  bottom: 1rem;
+  left: 1rem;
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+:deep(.p-inputswitch-slider::before) {
+  top: 10%;
 }
 </style>

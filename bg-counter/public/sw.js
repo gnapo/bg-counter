@@ -1,6 +1,6 @@
 const GHPATH = '/bg-counter/';
 const APP_PREFIX = 'bgc_';
-const VERSION = 'version_005';
+const VERSION = 'version_006';
 const FILES = ['', 'favicon.ico', 'android-chrome-192x192.png']
 
 

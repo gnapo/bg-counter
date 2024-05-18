@@ -1,33 +1,50 @@
 <script setup lang="ts">
 import Button from "primevue/button";
 import InputNumber from "primevue/inputnumber";
-import {useStorage} from "@vueuse/core";
-import {ref} from "vue";
+import {computed, type ModelRef} from "vue";
+import {darkenColor} from "@/colorUtil";
 
-const counter = useStorage("counter", ref(0));
+const model: ModelRef<number> = defineModel({default: 0})
+const props = withDefaults(defineProps<{
+  name?: string
+  color?: string
+}>(), {
+  color: "#2196f3"
+})
 const increment = (n: number) => {
-  counter.value += n;
+  model.value += n;
 }
 const decrement = (n: number) => {
-  counter.value = Math.max(counter.value - n, 0);
+  model.value = Math.max(model.value - n, 0);
 }
+const colorstring = computed(() => {
+  return '#' + props.color;
+})
+const darkenedColor = computed(() => {
+  return darkenColor(props.color, 50)
+})
 </script>
 
 <template>
   <div class="counterContainer">
-    <Button class="button-topleft" @click="increment(10)">
+    <Button class="button-topleft" @click="increment(10)"
+            :style='{backgroundColor: colorstring, borderColor: darkenedColor}'>
       +10
     </Button>
-    <Button class="button-topright" @click="increment(1)">
+    <Button class="button-topright" @click="increment(1)"
+            :style='{backgroundColor: colorstring, borderColor: darkenedColor}'>
       +1
     </Button>
     <div class="number-input">
-      <InputNumber v-model="counter" :min="0" />
+      <InputNumber v-model="model" :min="0"/>
+      <span class="textlabel"> {{ props.name }}</span>
     </div>
-    <Button class="button-bottomleft" @click="decrement(10)">
+    <Button class="button-bottomleft" @click="decrement(10)"
+            :style='{backgroundColor: colorstring, borderColor: darkenedColor}'>
       -10
     </Button>
-    <Button class="button-bottomright" @click="decrement(1)">
+    <Button class="button-bottomright" @click="decrement(1)"
+            :style='{backgroundColor: colorstring, borderColor: darkenedColor}'>
       -1
     </Button>
   </div>
@@ -55,46 +72,55 @@ const decrement = (n: number) => {
   font-size: 3rem;
   text-align: center;
   display: flex;
+
   span {
     width: 100%;
+
     input {
       text-align: center;
     }
   }
+
+  position: relative;
 }
 
 :deep(.p-inputnumber-input) {
   width: 100%;
   font-size: 5rem;
   text-align: center;
-
 }
 
 .button-topleft {
   grid-area: button-topleft;
   border-radius: 32px 0 0 0;
   font-size: 4rem;
-
 }
 
 .button-topright {
   grid-area: button-topright;
   border-radius: 0 32px 0 0;
   font-size: 4rem;
-
 }
 
 .button-bottomleft {
   grid-area: button-bottomleft;
   border-radius: 0 0 0 32px;
   font-size: 4rem;
-
 }
 
 .button-bottomright {
   grid-area: button-bottomright;
   border-radius: 0 0 32px 0;
   font-size: 4rem;
+}
 
+.number-input .textlabel {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  font-size: 2.3rem;
+  z-index: 1;
+  color: grey;
+  text-align: start;
 }
 </style>
