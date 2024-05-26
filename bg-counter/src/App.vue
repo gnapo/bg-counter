@@ -7,13 +7,14 @@ import InputText from "primevue/inputtext"
 import ColorPicker from 'primevue/colorpicker'
 import {useStorage, useWakeLock} from "@vueuse/core"
 import {reactive, type Ref, ref, watch} from "vue"
-interface counter {
+interface Counter {
   name: string
   color: string
   value: number
 }
 
-const counters: Ref<counter[]> = useStorage("counters", ref([{name: '', color: '', value: 0}]));
+const counters: Ref<Counter[]> = useStorage("counters", ref([{name: '', color: '', value: 0}]));
+const compact: Ref<boolean> = useStorage("compact", ref(false));
 const wakeLock = reactive(useWakeLock())
 wakeLock.request('screen')
 
@@ -30,12 +31,15 @@ watch(keepAwake, (value) => {
 
 <template>
   <Button @click="showSidebar = !showSidebar" icon="pi pi-cog" class="overlay-button"/>
-  <div class="counters" >
-    <Counter v-for="(counter, index) in counters"  :name="counter.name" :color="counter.color" v-model="counter.value" :key="index"/>
+  <div class="counters" :class="{ 'compact-counter': compact}" >
+    <Counter v-for="(counter, index) in counters"  :name="counter.name" :color="counter.color" v-model="counter.value" :compact :key="index"/>
   </div>
   <Sidebar v-model:visible="showSidebar" :header="'Options'">
     <p class="line">
-    Keep screen on <InputSwitch v-model="keepAwake" />
+      Keep screen on <InputSwitch v-model="keepAwake" />
+    </p>
+    <p class="line">
+      Compact mode <InputSwitch v-model="compact" />
     </p>
     <p class="line" v-for="(counter, index) in counters" :key="index">
       <InputText v-model="counter.name" />  <ColorPicker v-model="counter.color" default-color="ffffff"/>
@@ -43,7 +47,7 @@ watch(keepAwake, (value) => {
 
     <p class="line" >
       <Button @click="counters.push({name: '', color: '', value: 0})" icon="pi pi-plus" />
-      <Button @click="counters.pop()" icon="pi pi-minus" v-if="counters.length>1"/>
+      <Button @click="counters.pop()" icon="pi pi-minus" v-if="counters.length>0"/>
     </p>
   </Sidebar>
 </template>
@@ -56,9 +60,12 @@ watch(keepAwake, (value) => {
   margin: 1rem;
 }
 .counters {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 1rem;
+}
+.compact-counter {
+  grid-template-columns: 1fr 1fr;
 }
 
 .overlay-button {
